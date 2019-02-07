@@ -102,10 +102,11 @@ def generador_media_movil(iterable, longitud):
     Por ejemplo, si la longitud es 3, generaría la media de los 3 primeros
     valores, de los valores del 2º al 4º, de los valores del 3º al 5º...
     Los valores se deben generar de uno en uno.
-    """ 
+    """
 
-    for i in range(len(iterable) - longitud + 1):
-        yield sum(iterable[i:i+longitud])/longitud
+    iterators = [iter(iterable[i:-longitud+i+1]) for i in range(longitud-1)]
+    for x in iterable[longitud-1:]:
+        yield sum([next(e) for e in iterators] + [x])/longitud
 
 def test_generador_media_movil(): 
     """
@@ -145,7 +146,7 @@ def test_generador_media_movil():
     assert list(generador_media_movil([1, 2] * 1000, 2)) == [1.5] * 1999     
     assert list(generador_media_movil([1, 2] * 1000, 3)) == [4/3, 5/3] * 999
        
-    for v in generador_media_movil(range(10**18), 10):
+    for v in generador_media_movil(range(10**100), 10):
         if v >= 100:
             break
         
