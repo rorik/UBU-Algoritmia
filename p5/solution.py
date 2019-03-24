@@ -12,14 +12,21 @@ class Particion:
         Crea una partición con los elementos del iterable.
         Inicialmente cada elemento forma un subconjunto.
         """
-        self.subcunjuntos = [[i] for i in iterable]
-        self.altura = [0] * len(iterable)
-        self.padre = iterable
+        self._padres = {}
+        self._subconjuntos = {}
+        for elemento in iterable:
+            self._padres[elemento] = None
+            self._subconjuntos[elemento] = [[elemento], 0, elemento]
 
     def __len__(self):
         """Devuelve el número de subconjuntos en la partición."""
 
-        return len(self.subcunjuntos)
+        return len(self._subconjuntos)
+
+    def _get_root(self, k):
+        while self._padres[k] is not None:
+            k = self._padres[k]
+        return k
 
     def numero(self, k=None):
         """
@@ -29,12 +36,14 @@ class Particion:
         """
 
         if k is None:
-            return sum([len(i) for i in self.subcunjuntos])
+            return sum([len(subconjunto[0]) for subconjunto in self._subconjuntos.values()])
 
-        for i in self.subcunjuntos:
-            if k in i:
-                return len(i)
+        subconjunto = self._get_subconjunto(k)
+        return None if subconjunto is None else len(subconjunto[0])
 
+    def _get_subconjunto(self, k):
+        if k in self._padres:
+            return self._subconjuntos[self._get_root(k)]
         return None
 
     def __getitem__(self, k):
@@ -42,53 +51,41 @@ class Particion:
         Devuelve el subconjunto al que pertenece el elemento k.
         El subconjunto se identifica mediante uno de sus elementos.
         """
-
-        for i in self.subcunjuntos:
-            if k in i:
-                if len(i) == 1:
-                    return i[0]
-                return i
-
-        return None
+        subconjunto = self._get_subconjunto(k)
+        if subconjunto is None:
+            return None
+        if len(subconjunto[0]) == 1:
+            return subconjunto[0][0]
+        return subconjunto[0]
 
     def __iter__(self):
         """
         Devuelve un iterador sobre los subconjuntos.
         Cada subconjunto se identifica mediante uno de sus elementos.
         """
-
-        yield from self.padre
+        for elemento, padre in self._padres.items():
+            if padre is None:
+                yield elemento
 
     def une(self, a, b):
         """Une los subconjuntos a los que pertencen a y b."""
-        i_a = None
-        i_b = None
-        for i in range(len(self)):
-            if a in self.subcunjuntos[i]:
-                i_a = i
-                if i_b is not None:
-                    break
-            if b in self.subcunjuntos[i]:
-                i_b = i
-                if i_a is not None:
-                    break
 
-        if i_a is None or i_b is None:
+        subconjunto_a = self._get_subconjunto(a)
+        subconjunto_b = self._get_subconjunto(b)
+
+        if subconjunto_a is None or subconjunto_b is None:
             return None
 
-        if self.altura[i_a] == self.altura[i_b]:
-            self.altura[i_a] += 1
-            self.subcunjuntos[i_a].extend(self.subcunjuntos[i_b])
-            self.subcunjuntos.pop(i_b)
-            self.altura.pop(i_b)
-        elif self.altura[i_a] > self.altura[i_b]:
-            self.subcunjuntos[i_a].extend(self.subcunjuntos[i_b])
-            self.subcunjuntos.pop(i_b)
-            self.altura.pop(i_b)
+        if subconjunto_a[1] >= subconjunto_b[1]:
+            if subconjunto_a[1] == subconjunto_b[1]:
+                subconjunto_a[1] += 1
+            subconjunto_a[0].extend(subconjunto_b[0])
+            self._subconjuntos.pop(subconjunto_b[2])
+            self._padres[subconjunto_b[2]] = subconjunto_a[2]
         else:
-            self.subcunjuntos[i_b].extend(self.subcunjuntos[i_a])
-            self.subcunjuntos.pop(i_a)
-            self.altura.pop(i_a)
+            subconjunto_b[0].extend(subconjunto_a[0])
+            self._subconjuntos.pop(subconjunto_a[2])
+            self._padres[subconjunto_a[2]] = subconjunto_b[2]
 
 
 class TestParticion(unittest.TestCase):
