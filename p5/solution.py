@@ -158,25 +158,18 @@ def arbol_extendido_kruskal(grafo): #TODO
     Los grafos son diccionario donde las claves son arcos (pares de nodos) y los
     valores son el peso de los arcos.
     """
-    nodos = []
-    for n1,n2 in grafo:
-        if n1 not in grafo:
-            nodos.append(n1)
-        if n2 not in grafo:
-            nodos.append(n2)
-
+    nodos = set([nodo for arco in grafo for nodo in arco])
     p = Particion(nodos)
-    arbol_extendido = {}
-    
-    for arco in grafo:
-        n1, n2 = arco
-        peso = grafo[arco]
-        if p[n1] != p[n2]:
-            p.une(n1,n2)
-            arbol_extendido[(n1,n2)] = peso
-    
-    return arbol_extendido
-        
+    abiertos = list(grafo.items())
+    abiertos.sort(key=lambda arco: arco[1], reverse=True)
+    cerrados = {}
+    while len(abiertos) > 0:
+        arco = abiertos.pop()
+        subconjunto_origen = p[arco[0][0]]
+        if not isinstance(subconjunto_origen, list) or not arco[0][1] in subconjunto_origen:
+            p.une(*arco[0])
+            cerrados[arco[0]] = arco[1]
+    return cerrados
 
 
 class TestArbolExtendidoKruskal(unittest.TestCase):
