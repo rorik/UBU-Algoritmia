@@ -25,15 +25,13 @@ def divide_y_venceras_recursivo(inferior, superior=None, divisiones=2):
     resultado = [(inferior, superior)]
     if inferior != superior:
         gap = math.floor((superior - inferior) / divisiones)
-        previous = inferior
-        for i in range(divisiones):
-            inf = previous
-            sup = previous + gap
-            if sup >= superior:
-                resultado.extend(divide_y_venceras_recursivo(inf, superior, divisiones))
-                break
-            resultado.extend(divide_y_venceras_recursivo(inf, sup, divisiones))
-            previous = min(sup + 1, superior)
+        start = inferior
+        while start <= superior:
+            inf = start
+            sup = min(start + gap, superior)
+            res = divide_y_venceras_recursivo(inf, sup, divisiones)
+            resultado.extend(res)
+            start = sup + 1
 
     return resultado
 
