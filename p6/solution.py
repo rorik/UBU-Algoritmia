@@ -161,5 +161,48 @@ class TestDivideYVencerasRecursivo(unittest.TestCase):
         self.assertEqual(esperados, list(self.generador(0, 100, 3)))
 
 
+def divide_y_venceras_iterativo(inferior, superior=None, divisiones=2):
+    """
+    Genera los mismos valores que divide_y_venceras_recursivo, pero sin usar 
+    recursión.
+    """
+    
+    if superior is None:
+        superior = inferior
+        inferior = 0
+
+    resultado = []
+    queue = [(inferior, superior)]
+    while len(queue) > 0:
+        inferior, superior = queue.pop(0)
+        resultado.append((inferior, superior))
+        if inferior != superior:
+            diff = superior - inferior + 1
+            if diff <= divisiones:
+                for i in range(diff):
+                    inf = inferior + i
+                    resultado.append((inf, inf))
+            else:
+                gap = math.floor(diff / divisiones)
+                remainder = diff - gap * divisiones
+                next_inf = inferior
+                queued = []
+                for i in range(divisiones):
+                    inf = next_inf
+                    sup = inf + gap - 1
+                    if remainder > 0:
+                        sup += 1
+                        remainder -= 1
+                    next_inf = sup + 1
+                    queued.append((inf, sup))
+                queue = queued + queue
+
+    return resultado
+
+class TestDivideYVencerasIterativo(TestDivideYVencerasRecursivo):
+    
+    def setUp(self):
+        self.generador = divide_y_venceras_iterativo
+
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], exit=False)
