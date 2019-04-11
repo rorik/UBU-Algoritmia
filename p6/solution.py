@@ -309,6 +309,20 @@ class TestDivideYVencerasAnchura(unittest.TestCase):
                      (19, 19), (20, 20)]
         self.assertEqual(esperados, list(self.generador(0, 20, 3)))
 
+class TestDivideYVencerasTodos(unittest.TestCase):
+  
+    def test(self):
+        for n in range(100):
+            for d in range(2, 10):
+                lista = list(divide_y_venceras_recursivo(0, n, d))
+                self.assertEqual(lista, list(divide_y_venceras_iterativo(0, n, d)))
+                self.assertEqual(sorted(lista), 
+                                 sorted(divide_y_venceras_anchura(0, n, d)))
+                
+                # comprobamos que cada elemento en el rango aparece por lo menos 
+                # una vez
+                self.assertEqual(sorted({y for x in lista for y in x}), 
+                                 list(range(n + 1)))
 
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], exit=False)
