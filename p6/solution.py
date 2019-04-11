@@ -204,5 +204,111 @@ class TestDivideYVencerasIterativo(TestDivideYVencerasRecursivo):
     def setUp(self):
         self.generador = divide_y_venceras_iterativo
 
+def divide_y_venceras_anchura(inferior, superior=None, divisiones = 2):
+    """
+    Genera los mismos valores que divide_y_venceras_recursivo y
+    divide_y_venceras_iterativo, pero ordenados de acuerdo a un recorrido en
+    anchura (o por niveles) del árbol de traza.
+    """
+    
+    if superior is None:
+        superior = inferior
+        inferior = 0
+
+    resultado = []
+    next_level = [(inferior, superior)]
+    while len(next_level) > 0:
+        current_level = next_level
+        next_level = []
+        while len(current_level) > 0:
+            inferior, superior = current_level.pop(0)
+            resultado.append((inferior, superior))
+            if inferior != superior:
+                diff = superior - inferior + 1
+                if diff <= divisiones:
+                    for i in range(diff):
+                        inf = inferior + i
+                        next_level.append((inf, inf))
+                else:
+                    gap = math.floor(diff / divisiones)
+                    remainder = diff - gap * divisiones
+                    next_inf = inferior
+                    for i in range(divisiones):
+                        inf = next_inf
+                        sup = inf + gap - 1
+                        if remainder > 0:
+                            sup += 1
+                            remainder -= 1
+                        next_inf = sup + 1
+                        next_level.append((inf, sup))
+
+    return resultado
+
+class TestDivideYVencerasAnchura(unittest.TestCase):
+    
+    def setUp(self):
+        
+        self.generador = divide_y_venceras_anchura    
+       
+    def test_0(self):
+                
+        esperados = [(0, 0)]
+        self.assertEqual(esperados, list(self.generador(0)))
+        
+    def test_1(self):
+
+        esperados = [(0, 1), (0, 0), (1, 1)]
+        self.assertEqual(esperados, list(self.generador(1)))
+
+    def test_2(self):
+        
+        esperados = [(0, 2), (0, 1), (2, 2), (0, 0), (1, 1)]
+        self.assertEqual(esperados, list(self.generador(2)))
+    
+    def test_3(self):
+        
+        esperados = [(0, 3), (0, 1), (2, 3), (0, 0), (1, 1), (2, 2), (3, 3)]
+        self.assertEqual(esperados, list(self.generador(3)))
+    
+    def test_1_4(self):
+        
+        esperados = [(1, 4), (1, 2), (3, 4), (1, 1), (2, 2), (3, 3), (4, 4)]
+        self.assertEqual(esperados, list(self.generador(1, 4)))
+    
+    def test_0_4_3(self):
+        
+        esperados = [(0, 4), (0, 1), (2, 3), (4, 4), (0, 0), (1, 1), (2, 2), 
+                     (3, 3)]
+        self.assertEqual(esperados, list(self.generador(0, 4, 3)))
+    
+    def test_0_9_3(self):
+        
+        esperados = [(0, 9), (0, 3), (4, 6), (7, 9), (0, 1), (2, 2), (3, 3), 
+                     (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (0, 0), 
+                     (1, 1)]
+        assert esperados == list(divide_y_venceras_anchura(0, 9, 3))                        
+
+    def test_20(self):
+        
+        esperados = [(0, 20), (0, 10), (11, 20), (0, 5), (6, 10), (11, 15), 
+                     (16, 20), (0, 2), (3, 5), (6, 8), (9, 10), (11, 13), 
+                     (14, 15), (16, 18), (19, 20), (0, 1), (2, 2), (3, 4), 
+                     (5, 5), (6, 7), (8, 8), (9, 9), (10, 10), (11, 12), 
+                     (13, 13), (14, 14), (15, 15), (16, 17), (18, 18), (19, 19),
+                     (20, 20), (0, 0), (1, 1), (3, 3), (4, 4), (6, 6), (7, 7), 
+                     (11, 11), (12, 12), (16, 16), (17, 17)]
+        assert esperados == list(divide_y_venceras_anchura(20))
+
+    def test_0_20_3(self):        
+        
+        esperados = [(0, 20), (0, 6), (7, 13), (14, 20), (0, 2), (3, 4), (5, 6), 
+                     (7, 9), (10, 11), (12, 13), (14, 16), (17, 18), (19, 20), 
+                     (0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), 
+                     (7, 7), (8, 8), (9, 9), (10, 10), (11, 11), (12, 12), 
+                     (13, 13), (14, 14), (15, 15), (16, 16), (17, 17), (18, 18),
+                     (19, 19), (20, 20)]
+        self.assertEqual(esperados, list(self.generador(0, 20, 3)))
+
+
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], exit=False)
