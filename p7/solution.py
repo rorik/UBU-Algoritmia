@@ -145,34 +145,38 @@ class Hanoi:
             destino -= 1
 
         origen = max(enumerate(self._postes), key=lambda poste: poste[1][0] if len(poste[1]) > 0 else -1)
-        auxiliar = [-1, inf]
-        for i, poste in enumerate(self._postes):
-            if i not in (origen[0], destino):
-                if len(poste) == 0:
-                    auxiliar = [i, None]
-                    break
-                if poste[-1] < auxiliar[1]:
-                    auxiliar = [i, poste[1]]
+
+        auxiliar = self._get_aux(origen[0], destino)
 
         movimientos = []
-        self._resolver(origen[1][0], origen[0], destino, auxiliar[0], movimientos)
+        self._resolver(origen[1][0], origen[0], destino, auxiliar, movimientos)
         return movimientos
 
     def _resolver(self, n, origen, destino, auxiliar, movimientos):
+        auxiliar = self._get_aux(origen, destino)
         for disco in [disco + 1 for disco in reversed(range(n - 1))]:
             if disco in self._postes[origen]:
-                self._resolver(disco, origen, auxiliar, destino, movimientos)
+                self._resolver(n=disco, origen=origen, destino=auxiliar, auxiliar=destino, movimientos=movimientos)
                 break
             elif disco in self._postes[destino]:
-                self._resolver(disco, destino, auxiliar, origen, movimientos)
+                self._resolver(n=disco, origen=destino, destino=auxiliar, auxiliar=origen, movimientos=movimientos)
                 break
 
         movimientos.append((origen + 1, destino + 1))
         self.mueve(origen + 1, destino + 1)
 
         if n > 1:
-            self._resolver(n - 1, auxiliar, destino, origen, movimientos)
+            self._resolver(n=n - 1, origen=auxiliar, destino=destino, auxiliar=origen, movimientos=movimientos)
 
+    def _get_aux(self, origen, destino):
+        auxiliar = [-1, inf]
+        for i, poste in enumerate(self._postes):
+            if i not in (origen, destino):
+                if len(poste) == 0:
+                    return i
+                if poste[-1] < auxiliar[1]:
+                    auxiliar = [i, poste[0]]
+        return auxiliar[0]
 
 # for h in (
 #     Hanoi(3), Hanoi(4), Hanoi(3, 5), Hanoi([1, 2, 3]),  Hanoi([1, 2, 3] * 2), 
