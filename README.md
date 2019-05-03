@@ -4,4 +4,4 @@
 
 Nombre para las entregas:
 
-**García_Moreno_Willow__Díaz_García_Rodrigo__Pineda_Miñón_Adrián.zip**
+**Díaz_García_Rodrigo__García_Moreno_Willow__Pineda_Miñón_Adrián.zip**
