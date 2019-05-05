@@ -13,7 +13,21 @@ def subsecuencia_comun_mas_larga(x, y):
     tiene la longitud máxima de todas las subsecuencias comunes.
     """
     
-    pass
+    matrix = [["" for j in y] for i in x]
+    
+    for i in range(len(x)):
+        for j in range(len(y)):
+            if x[i] == y[j]:
+                if i == 0 or j == 0:
+                    matrix[i][j] = x[i]
+                else:
+                    matrix[i][j] = matrix[i-1][j-1] + x[i]
+            else:
+                matrix[i][j] = max(matrix[i-1][j], matrix[i][j-1], key=len)
+
+    subsequence = matrix[-1][-1]
+    
+    return subsequence
 
 
 def es_subsecuencia(subsecuencia, secuencia):
