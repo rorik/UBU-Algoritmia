@@ -113,12 +113,8 @@ def subsecuencias_comunes_mas_largas(x, y):
                 top = matrix[i - 1][j]
                 left = matrix[i][j - 1]
                 if len(top) == 0:
-                    if len(left) == 0:
-                        # No subsequences yet
-                        matrix[i][j] = set()
-                    else:
-                        # Subsequences on the left side only
-                        matrix[i][j] = left.copy()
+                    # Subsequences on the left side only (might be an empty set)
+                    matrix[i][j] = left.copy()
                 else:
                     if len(left) == 0:
                         # Subsequences on the top side only
