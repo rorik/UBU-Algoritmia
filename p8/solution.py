@@ -92,7 +92,7 @@ def subsecuencias_comunes_mas_largas(x, y):
     ambas que tienen longitud máxima.
     """
     # Create a (x+1)*(y+1) matrix, with all elements None except the first row (all empty sets)
-    matrix = [[set() for _ in range(len(y) + 1)]] + [[None for _ in range(len(y) + 1)] for _ in range(len(x))]
+    matrix = [[set()] * (len(y) + 1)] + [[None] * (len(y) + 1)  for _ in range(len(x))]
 
     # Set all elements in the first column as empty sets
     for i in range(1, len(x) + 1):
