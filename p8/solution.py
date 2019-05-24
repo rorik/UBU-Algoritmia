@@ -133,8 +133,7 @@ def subsecuencias_comunes_mas_largas(x, y):
                             # The left subsequences are longer
                             matrix[i][j] = left.copy()
 
-    max_length = max([len(subsequence) for subsequence in matrix[-1][-1]])
-    return set([subsequence for subsequence in matrix[-1][-1] if len(subsequence) == max_length])
+    return matrix[-1][-1]
 
 
 class TestSubsecuenciasComunesMasLarga(unittest.TestCase):
