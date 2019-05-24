@@ -36,7 +36,7 @@ class Particion:
         """
 
         if k is None:
-            return sum([len(subconjunto[0]) for subconjunto in self._subconjuntos.values()])
+            return len(self._padres)
 
         subconjunto = self._get_subconjunto(k)
         return None if subconjunto is None else len(subconjunto[0])
